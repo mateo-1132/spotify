@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: spotify
+    images:
+      path: uploads/images/
+    audio:
+      path: uploads/audio/
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:7000/db
+    username: admin
+    password: password
+  security:
+    jwt:
+      secret: 99xL4bLcs7ivaPqoLSSy8BHYrPPNWTuxTWNV0FyCzLs=
+      expiration: 28800000
+      refresh:
+        expiration: 604800000
