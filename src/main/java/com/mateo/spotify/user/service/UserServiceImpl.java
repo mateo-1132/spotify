@@ -3,11 +3,20 @@ package com.mateo.spotify.user.service;
 import com.mateo.spotify.user.dto.UserResponseDTO;
 import com.mateo.spotify.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +28,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO uploadProfilePicture(MultipartFile image) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getName() == null) {
+            throw new RuntimeException("El usuario no esta autenticado!!");
+        }
+
+        String username = authentication.getName();
+
         if (image == null || image.isEmpty()) throw new RuntimeException("El archivo no existe");
 
         String filename = image.getOriginalFilename();
@@ -28,6 +44,21 @@ public class UserServiceImpl implements UserService {
 
         List<String> allowedExtensions = List.of("jpg","jpeg","png");
         if (!allowedExtensions.contains(extension)) throw new RuntimeException("Extension no valida");
+
+
+        try {
+
+            Path uploadPath = Paths.get("uploads/images/");
+            if (!Files.exists(uploadPath)){
+                Files.createDirectories(uploadPath);
+            }
+
+            String newFilename = UUID.randomUUID() + "." + extension;
+
+
+        }catch (IOException ex){
+            throw new RuntimeException("Error al guardar la images " + ex);
+        }
 
 
         return null;
