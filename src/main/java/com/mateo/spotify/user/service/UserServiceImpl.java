@@ -1,8 +1,11 @@
 package com.mateo.spotify.user.service;
 
 import com.mateo.spotify.user.dto.UserResponseDTO;
+import com.mateo.spotify.user.entity.UserEntity;
+import com.mateo.spotify.user.mapper.UserMapper;
 import com.mateo.spotify.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -23,6 +27,10 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
+    @Value("${spring.application.images.path}")
+    private String imagesPath;
 
 
     @Override
@@ -48,19 +56,30 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            Path uploadPath = Paths.get("uploads/images/");
+            Path uploadPath = Paths.get(imagesPath);
             if (!Files.exists(uploadPath)){
                 Files.createDirectories(uploadPath);
             }
 
             String newFilename = UUID.randomUUID() + "." + extension;
 
+            Path filePath = uploadPath.resolve(newFilename);
+
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            UserEntity user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            user.setProfilePictureUrl(imagesPath + newFilename);
+
+            return userMapper.toDTO(userRepository.save(user));
+
+
+
 
         }catch (IOException ex){
             throw new RuntimeException("Error al guardar la images " + ex);
         }
 
-
-        return null;
     }
 }
