@@ -30,6 +30,7 @@ public class SongEntity {
     @Column(nullable = false, name = "song_url")
     private String songUrl;
 
+
     @ManyToOne
     @JoinColumn(name = "author_id")
     private UserEntity author;
@@ -37,6 +38,10 @@ public class SongEntity {
     @ManyToOne
     @JoinColumn(name = "album_id")
     private AlbumEntity album;
+
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
+    private GenreEntity genre;
 
     @ManyToMany(mappedBy = "songs")
     private List<PlayListEntity> playLists;
