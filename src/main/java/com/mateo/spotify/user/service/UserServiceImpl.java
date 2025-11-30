@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +81,23 @@ public class UserServiceImpl implements UserService {
         }catch (IOException ex){
             throw new RuntimeException("Error al guardar la images " + ex);
         }
+
+    }
+
+    @Override
+    public UserResponseDTO getCurrentUser() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getName() == null) {
+            throw new RuntimeException("El usuario no esta autenticado!!");
+        }
+
+        String username = authentication.getName();
+
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No existe el nombre de usuario"));
+
+        return userMapper.toDTO(userEntity);
 
     }
 }

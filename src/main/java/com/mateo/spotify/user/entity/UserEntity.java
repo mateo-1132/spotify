@@ -1,7 +1,7 @@
 package com.mateo.spotify.user.entity;
 
-import com.mateo.spotify.song.entity.AlbumEntity;
-import com.mateo.spotify.song.entity.PlayListEntity;
+import com.mateo.spotify.album.entity.AlbumEntity;
+import com.mateo.spotify.playlist.entity.PlayListEntity;
 import com.mateo.spotify.song.entity.SongEntity;
 import jakarta.persistence.*;
 import lombok.*;

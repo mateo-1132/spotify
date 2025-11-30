@@ -5,4 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     UserResponseDTO uploadProfilePicture(MultipartFile image);
+    UserResponseDTO getCurrentUser();
 }
